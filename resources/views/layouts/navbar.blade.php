@@ -10,15 +10,22 @@
           <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" aria-current="page" href="{{ route('dashboard') }}">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {{ Request::is('admin/users') ? 'active' : '' }}" href="{{ route('admin.users') }}">Users</a>
+          <a class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}" href="{{ route('admin.users') }}">Users</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {{ Request::is('produk') ? 'active' : '' }}" href="{{ route('produk.index') }}">Produk</a>
+          <a class="nav-link {{ Request::is('admin/produk*') ? 'active' : '' }}" href="{{ route('admin.produk.index') }}">Produk</a>
         </li>
-      <form class="position-absolute top-50 start-100 translate-middle" action="{{ route('logout') }}" method="POST">
+        <!-- Perbaikan: Penambahan tag <li class="nav-item"> dan proteksi nama route -->
+        <li class="nav-item">
+          <a class="nav-link {{ Request::is('penjualan*') || Request::is('admin/penjualan*') ? 'active' : '' }}" 
+             href="{{ Route::has('penjualan.index') ? route('penjualan.index') : (Route::has('admin.penjualan.index') ? route('admin.penjualan.index') : (Route::has('penjualan.create') ? route('penjualan.create') : '#')) }}">
+             Penjualan
+          </a>
+        </li>
+      </ul>
+      <form class="ms-auto" action="{{ route('logout') }}" method="POST">
         @csrf
         <button type="submit" class="btn btn-danger me-2">Logout</button>
-        
       </form>
     </div>
   </div>

@@ -18,16 +18,18 @@ class ProdukController extends Controller
      */
     public function index(SearchRequest $request)
     {
-        $this->authorize('viewAny', Produk::class);
-
         $keyword = $request->input('search');
 
-        $products = Produk::when($keyword, function ($query, $keyword) {
-            return $query->where('nama', 'like', '%' . $keyword . '%');
-        })
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+        if ($keyword) {
+            $products = Produk::when($keyword, function ($query) use ($keyword) {
+                $query->where('nama', 'like', '%' . $keyword . '%');
+            })
+                ->orderBy('nama')
+                ->paginate(10)
+                ->withQueryString();
+        } else {
+            $products = Produk::latest()->paginate(10)->withQueryString();
+        }
 
         return view('produk.index', compact('products'));
     }
@@ -51,19 +53,23 @@ class ProdukController extends Controller
 
         $dataReq = $request->validated();
 
-        $data['user_id']     = Auth::id();
-        $data['nama']        = $dataReq['name'];
-        $data['harga_beli']  = $dataReq['purchase_price'];
-        $data['harga_jual']  = $dataReq['selling_price'];
-        $data['stok']        = $dataReq['stock'] ?? 0; // Perbaikan: default angka 0
+        // Menyesuaikan name input dari Form dengan kolom di database
+        $data = [
+            'user_id'    => Auth::id(),
+            'nama'       => $dataReq['name'],
+            'harga_beli' => $dataReq['purchase_price'],
+            'harga_jual' => $dataReq['selling_price'],
+            'stok'       => $dataReq['stock'],
+        ];
 
+       
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('products', 'public');
         }
 
         Produk::create($data);
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan.');
+        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
     /**
@@ -81,7 +87,6 @@ class ProdukController extends Controller
      */
     public function edit(Produk $produk)
     {
-        $this->authorize('update', $produk); // Perbaikan: tambahkan otorisasi
 
         return view('produk.edit', compact('produk'));
     }
@@ -92,36 +97,27 @@ class ProdukController extends Controller
     public function update(UpdateRequest $request, Produk $produk)
     {
         $this->authorize('update', $produk);
-        
+
         $dataReq = $request->validated();
 
         $data = [
             'user_id'    => Auth::id(),
-            'nama'       => $dataReq['name'],
-            'harga_beli' => $dataReq['purchase_price'],
-            'harga_jual' => $dataReq['selling_price'],
-            'stok'       => $dataReq['stock'],
+            'nama'       => $dataReq['name'] ?? $dataReq['nama_produk'],
+            'harga_beli' => $dataReq['purchase_price'] ?? $dataReq['harga_beli'],
+            'harga_jual' => $dataReq['selling_price'] ?? $dataReq['harga_jual'],
+            'stok'       => $dataReq['stock'] ?? $dataReq['stok'],
         ];
 
-        // Jika upload foto baru
         if ($request->hasFile('foto')) {
-
-            // Hapus foto lama (jika ada)
-            if (
-                $produk->foto &&
-                Storage::disk('public')->exists($produk->foto)
-            ) {
+            if ($produk->foto && Storage::disk('public')->exists($produk->foto)) {
                 Storage::disk('public')->delete($produk->foto);
             }
-
-            // Simpan foto baru
             $data['foto'] = $request->file('foto')->store('products', 'public');
         }
 
         $produk->update($data);
 
-        // Perbaikan: Redirect ke halaman daftar produk index
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui.');
+        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
     /**
@@ -132,26 +128,22 @@ class ProdukController extends Controller
         $this->authorize('delete', $produk);
 
         try {
-            // Hapus berkas gambar jika ada
             if ($produk->foto && Storage::disk('public')->exists($produk->foto)) {
                 Storage::disk('public')->delete($produk->foto);
             }
 
-            // Hapus data produk dari database
             $produk->delete();
 
-            return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus.');
-
+            return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus.');
         } catch (QueryException $e) {
-            // Menangkap error Foreign Key Violation (SQLSTATE 23000 / Error 1451)
             if ($e->getCode() == '23000') {
-                return redirect()->route('produk.index')->with(
-                    'error', 
+                return redirect()->route('admin.produk.index')->with(
+                    'error',
                     'Gagal menghapus! Produk ini sudah terikat dengan riwayat transaksi penjualan.'
                 );
             }
 
-            return redirect()->route('produk.index')->with('error', 'Terjadi kesalahan saat menghapus produk.');
+            return redirect()->route('admin.produk.index')->with('error', 'Terjadi kesalahan saat menghapus produk.');
         }
     }
 }

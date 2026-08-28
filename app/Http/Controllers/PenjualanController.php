@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SearchRequest;
-use App\Models\ItemPenjualan; 
 use App\Models\Penjualan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
@@ -23,7 +22,7 @@ class PenjualanController extends Controller
 
         $sales = Penjualan::query()
             // 🔒 Filter berdasarkan role
-            ->when($user->role->name === 'kasir', function ($query) use ($user) {
+            ->when($user->role && $user->role->name === 'kasir', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
             // 🔍 Search nama user
@@ -42,7 +41,7 @@ class PenjualanController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create()
     {
         $sale = Penjualan::firstOrCreate(
             [
@@ -55,24 +54,38 @@ class PenjualanController extends Controller
             ]
         );
 
-        $keyword = $request->input('search');
-        $products = Produk::when($keyword, function ($query) use ($keyword) {
-            $query->where('nama', 'like', '%' . $keyword . '%');
-        })
-            ->orderBy('nama')
-            ->get();
-
+        $products = Produk::orderBy('nama')->get();
         $mode = 'create';
 
         return view('penjualan.pos', compact('sale', 'products', 'mode'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Selesaikan proses checkout pembayaran.
      */
-    public function store(Request $request)
+    public function checkout(Request $request, Penjualan $penjualan)
     {
-        //
+        // 1. Cukup validasi metode_pembayaran saja (hapus validasi bayar)
+        $request->validate([
+            'metode_pembayaran' => 'required|in:CASH,QRIS,TRANSFER',
+        ]);
+
+        // Cek jika keranjang kosong
+        if ($penjualan->itemPenjualan()->count() === 0) {
+            return back()->with('error', 'Keranjang belanja masih kosong.');
+        }
+
+        DB::transaction(function () use ($request, $penjualan) {
+            // 2. Set uang bayar sama dengan total pembayaran (uang pas)
+            $penjualan->update([
+                'metode_pembayaran' => $request->metode_pembayaran,
+                'bayar'             => $penjualan->total_pembayaran, // Otomatis diset uang pas
+                'kembalian'         => 0,                            // Kembalian 0
+                'status'            => 'CLOSED',
+            ]);
+        });
+
+        return redirect()->route('penjualan.index')->with('success', 'Transaksi berhasil diselesaikan.');
     }
 
     /**
@@ -80,61 +93,8 @@ class PenjualanController extends Controller
      */
     public function show(Penjualan $penjualan)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Penjualan $penjualan)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, ItemPenjualan $itempenjualan)
-    {
-        $request->validate([
-            'quantity' => 'required|integer|min:1'
-        ]);
-
-        DB::transaction(function () use ($request, $itempenjualan) {
-
-            $produk = $itempenjualan->produk()->lockForUpdate()->first();
-
-            $selisih = $request->quantity - $itempenjualan->kuantitas;
-
-            // Jika qty bertambah -> kurangi stok
-            if ($selisih > 0) {
-                if ($produk->stok < $selisih) {
-                    // Throw ValidationException agar transaksi otomatis ROLLBACK
-                    throw ValidationException::withMessages([
-                        'quantity' => 'Stok produk tidak mencukupi.'
-                    ]);
-                }
-                $produk->decrement('stok', $selisih);
-            }
-
-            // Jika qty berkurang -> kembalikan stok
-            if ($selisih < 0) {
-                $produk->increment('stok', abs($selisih));
-            }
-
-            // Update item
-            $itempenjualan->update([
-                'kuantitas' => $request->quantity,
-                'subtotal'  => $request->quantity * $itempenjualan->harga_satuan
-            ]);
-
-            // Update total penjualan
-            $itempenjualan->penjualan->update([
-                'total_pembayaran' => $itempenjualan->penjualan->itemPenjualan()->sum('subtotal')
-            ]);
-        });
-
-        return back()->with('success', 'Jumlah item berhasil diperbarui');
+        $penjualan->load('itemPenjualan.produk', 'user');
+        return view('penjualan.show', compact('penjualan'));
     }
 
     /**
@@ -142,32 +102,16 @@ class PenjualanController extends Controller
      */
     public function destroy(Penjualan $penjualan)
     {
-        // ! Pastikan hanya transaksi OPEN
-        if ($penjualan->status !== 'OPEN') {
-            return redirect()->route('penjualan.create')->with('error', 'Transaksi sudah selesai tidak bisa dibatalkan');
-        }
-
-        // ! Pastikan milik user login (kasir)
-        if ($penjualan->user_id !== Auth::id()) {
-            return redirect()->route('penjualan.create');
-        }
-
         DB::transaction(function () use ($penjualan) {
-
+            // Kembalikan stok produk jika transaksi dibatalkan/dihapus
             foreach ($penjualan->itemPenjualan as $item) {
-                // Kembalikan stok
-                $item->produk->increment('stok', $item->kuantitas);
+                $item->produk()->increment('stok', $item->kuantitas);
             }
 
-            // Hapus item
             $penjualan->itemPenjualan()->delete();
-
-            // Hapus penjualan
             $penjualan->delete();
         });
 
-        return redirect()
-            ->route('penjualan.index')
-            ->with('success', 'Transaksi berhasil dibatalkan');
+        return redirect()->route('penjualan.index')->with('success', 'Transaksi berhasil dihapus.');
     }
 }

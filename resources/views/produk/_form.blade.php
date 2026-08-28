@@ -1,14 +1,35 @@
 @csrf
 
+@if (!empty($produk->foto))
+    <div class="mb-2">
+        <label>Foto Saat Ini</label><br>
+        <img src="{{ asset('storage/' . $produk->foto) }}"
+             width="150"
+             class="img-thumbnail">
+    </div>
+@endif
 
-<div class="mb-3">
-    <label class="form-label">Gambar</label>
-    <input type="file" name="foto" class="form-control @error('foto') is-invalid @enderror">
-    @error('foto')
-        <div class="invalid-feedback d-block">
-            {{ $message }}
+<div class="row">
+    <div class="col">
+        <div>
+            <label>Gambar</label>
+            <input type="file"
+                   name="foto"
+                   onchange="previewImage(this)"
+                   class="form-control @error('foto') is-invalid @enderror">
+            @error('foto')
+                <div class="invalid-feedback d-block">
+                    {{ $message }}
+                </div>
+            @enderror
         </div>
-    @enderror
+    </div>
+    <div class="col">
+        <div class="mb-2">
+            <label>Preview Foto</label><br>
+            <img id="preview" class="img-thumbnail mt-2" style="display:none" width="150">
+        </div>
+    </div>
 </div>
 
 <div class="mb-3">

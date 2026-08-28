@@ -12,12 +12,12 @@ class ItemPenjualan extends Model
     protected $table = 'item_penjualan';
 
   protected $fillable = [
-    'penjualan_id',
-    'produk_id',
-    'jumlah',
-    'harga_satuan',
-    'subtotal',
-];
+        'penjualan_id',
+        'produk_id',
+        'kuantitas', // <-- PERBAIKAN: Diubah dari 'jumlah' menjadi 'kuantitas'
+        'harga_satuan',
+        'subtotal',
+    ];
 
     public function produk()
     {

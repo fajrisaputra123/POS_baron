@@ -22,12 +22,12 @@ class UserController extends Controller
         // Menggunakan LIKE agar pencarian fleksibel dan tidak butuh FULLTEXT index
         $users = User::when($keyword, function ($query, $keyword) {
             return $query->where('name', 'like', "%{$keyword}%")
-                         ->orWhere('email', 'like', "%{$keyword}%");
+                ->orWhere('email', 'like', "%{$keyword}%");
         })
-        ->paginate(10)
-        ->withQueryString();
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('admin.users.index', compact('users'));
+        return view('users.index', compact('users'));
     }
 
     /**

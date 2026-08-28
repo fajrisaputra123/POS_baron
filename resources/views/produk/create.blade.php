@@ -4,91 +4,93 @@
 <div class="container mt-4">
     <h2>Tambah Produk</h2>
 
-    <form action="{{ route('admin.produk.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.produk.store') }}" 
+          method="POST" 
+          enctype="multipart/form-data">
         @csrf
 
-        {{-- Input Gambar --}}
+        {{-- Input Gambar / Foto Produk --}}
         <div class="mb-3">
-            <label for="gambar" class="form-label">Gambar</label>
+            <label for="foto" class="form-label">Foto Produk</label>
             <input 
                 type="file" 
-                name="gambar" 
-                id="gambar" 
-                class="form-control @error('gambar') is-invalid @enderror"
+                name="foto" 
+                id="foto" 
+                class="form-control @error('foto') is-invalid @enderror"
                 accept="image/*"
             >
-            @error('gambar')
+            @error('foto')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
         {{-- Input Nama Produk --}}
         <div class="mb-3">
-            <label for="nama_produk" class="form-label">Nama Produk</label>
+            <label for="name" class="form-label">Nama Produk</label>
             <input 
                 type="text" 
-                name="nama_produk" 
-                id="nama_produk" 
-                class="form-control @error('nama_produk') is-invalid @enderror" 
-                value="{{ old('nama_produk') }}" 
+                name="name" 
+                id="name" 
+                class="form-control @error('name') is-invalid @enderror" 
+                value="{{ old('name') }}" 
                 required
             >
-            @error('nama_produk')
+            @error('name')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
         {{-- Input Harga Beli --}}
         <div class="mb-3">
-            <label for="harga_beli" class="form-label">Harga Beli</label>
+            <label for="purchase_price" class="form-label">Harga Beli</label>
             <input 
                 type="number" 
-                name="harga_beli" 
-                id="harga_beli" 
-                class="form-control @error('harga_beli') is-invalid @enderror" 
-                value="{{ old('harga_beli') }}" 
+                name="purchase_price" 
+                id="purchase_price" 
+                class="form-control @error('purchase_price') is-invalid @enderror" 
+                value="{{ old('purchase_price') }}" 
                 required
             >
-            @error('harga_beli')
+            @error('purchase_price')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
         {{-- Input Harga Jual --}}
         <div class="mb-3">
-            <label for="harga_jual" class="form-label">Harga Jual</label>
+            <label for="selling_price" class="form-label">Harga Jual</label>
             <input 
                 type="number" 
-                name="harga_jual" 
-                id="harga_jual" 
-                class="form-control @error('harga_jual') is-invalid @enderror" 
-                value="{{ old('harga_jual') }}" 
+                name="selling_price" 
+                id="selling_price" 
+                class="form-control @error('selling_price') is-invalid @enderror" 
+                value="{{ old('selling_price') }}" 
                 required
             >
-            @error('harga_jual')
+            @error('selling_price')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
         {{-- Input Stok --}}
         <div class="mb-3">
-            <label for="stok" class="form-label">Stok</label>
+            <label for="stock" class="form-label">Stok</label>
             <input 
                 type="number" 
-                name="stok" 
-                id="stok" 
-                class="form-control @error('stok') is-invalid @enderror" 
-                value="{{ old('stok') }}" 
+                name="stock" 
+                id="stock" 
+                class="form-control @error('stock') is-invalid @enderror" 
+                value="{{ old('stock') }}" 
                 required
             >
-            @error('stok')
+            @error('stock')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
         {{-- Tombol Aksi --}}
         <button type="submit" class="btn btn-success">Simpan</button>
-        <a href="{{ route('produk.index') }}" class="btn btn-secondary">Kembali</a>
+        <a href="{{ route('admin.produk.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection
