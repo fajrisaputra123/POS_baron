@@ -26,6 +26,12 @@ class Produk extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    // Tambahkan relasi ke model Jenis ini
+    public function jenis()
+    {
+        return $this->belongsTo(Jenis::class, 'jenis_id');
+    }
+
     public function itemPenjualan()
     {
         return $this->hasMany(ItemPenjualan::class, 'produk_id');

@@ -6,6 +6,7 @@ use App\Http\Requests\Produk\StoreRequest;
 use App\Http\Requests\Produk\UpdateRequest;
 use App\Http\Requests\SearchRequest;
 use App\Models\Produk;
+use App\Models\Jenis;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,16 +21,13 @@ class ProdukController extends Controller
     {
         $keyword = $request->input('search');
 
-        if ($keyword) {
-            $products = Produk::when($keyword, function ($query) use ($keyword) {
+        $products = Produk::with(['user', 'jenis'])
+            ->when($keyword, function ($query) use ($keyword) {
                 $query->where('nama', 'like', '%' . $keyword . '%');
             })
-                ->orderBy('nama')
-                ->paginate(10)
-                ->withQueryString();
-        } else {
-            $products = Produk::latest()->paginate(10)->withQueryString();
-        }
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return view('produk.index', compact('products'));
     }
@@ -41,7 +39,9 @@ class ProdukController extends Controller
     {
         $this->authorize('create', Produk::class);
 
-        return view('produk.create');
+        $jenis = Jenis::all();
+
+        return view('produk.create', compact('jenis'));
     }
 
     /**
@@ -53,23 +53,23 @@ class ProdukController extends Controller
 
         $dataReq = $request->validated();
 
-        // Menyesuaikan name input dari Form dengan kolom di database
         $data = [
             'user_id'    => Auth::id(),
-            'nama'       => $dataReq['name'],
-            'harga_beli' => $dataReq['purchase_price'],
-            'harga_jual' => $dataReq['selling_price'],
-            'stok'       => $dataReq['stock'],
+            'jenis_id'   => $dataReq['jenis_id'] ?? null,
+            'nama'       => $dataReq['name'] ?? $dataReq['nama'],
+            'harga_beli' => $dataReq['purchase_price'] ?? $dataReq['harga_beli'],
+            'harga_jual' => $dataReq['selling_price'] ?? $dataReq['harga_jual'],
+            'stok'       => $dataReq['stock'] ?? $dataReq['stok'],
+            'foto'       => null, // Menghindari error default value jika foto tidak diunggah
         ];
 
-       
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('products', 'public');
         }
 
         Produk::create($data);
 
-        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil ditambahkan.');
+        return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
     /**
@@ -87,8 +87,9 @@ class ProdukController extends Controller
      */
     public function edit(Produk $produk)
     {
+        $jenis = Jenis::all();
 
-        return view('produk.edit', compact('produk'));
+        return view('produk.edit', compact('produk', 'jenis'));
     }
 
     /**
@@ -102,7 +103,8 @@ class ProdukController extends Controller
 
         $data = [
             'user_id'    => Auth::id(),
-            'nama'       => $dataReq['name'] ?? $dataReq['nama_produk'],
+            'jenis_id'   => $dataReq['jenis_id'] ?? $produk->jenis_id,
+            'nama'       => $dataReq['name'] ?? $dataReq['nama_produk'] ?? $dataReq['nama'],
             'harga_beli' => $dataReq['purchase_price'] ?? $dataReq['harga_beli'],
             'harga_jual' => $dataReq['selling_price'] ?? $dataReq['harga_jual'],
             'stok'       => $dataReq['stock'] ?? $dataReq['stok'],
@@ -117,7 +119,7 @@ class ProdukController extends Controller
 
         $produk->update($data);
 
-        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil diperbarui.');
+        return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
     /**
@@ -134,16 +136,16 @@ class ProdukController extends Controller
 
             $produk->delete();
 
-            return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus.');
+            return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus.');
         } catch (QueryException $e) {
             if ($e->getCode() == '23000') {
-                return redirect()->route('admin.produk.index')->with(
+                return redirect()->route('produk.index')->with(
                     'error',
                     'Gagal menghapus! Produk ini sudah terikat dengan riwayat transaksi penjualan.'
                 );
             }
 
-            return redirect()->route('admin.produk.index')->with('error', 'Terjadi kesalahan saat menghapus produk.');
+            return redirect()->route('produk.index')->with('error', 'Terjadi kesalahan saat menghapus produk.');
         }
     }
 }

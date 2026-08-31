@@ -11,11 +11,7 @@
 
 <div class="container">
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+    
 
     <!-- Isi konten yang kita kirimkan dari views lain-->
      @yield('content')

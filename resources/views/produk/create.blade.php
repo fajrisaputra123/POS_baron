@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <h2>Tambah Produk</h2>
 
-    <form action="{{ route('admin.produk.store') }}" 
+    <form action="{{ route('produk.store') }}" 
           method="POST" 
           enctype="multipart/form-data">
         @csrf
@@ -20,6 +20,26 @@
                 accept="image/*"
             >
             @error('foto')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Input Pilihan Jenis Produk --}}
+        <div class="mb-3">
+            <label for="jenis_id" class="form-label">Jenis Produk</label>
+            <select 
+                name="jenis_id" 
+                id="jenis_id" 
+                class="form-select @error('jenis_id') is-invalid @enderror"
+            >
+                <option value="" selected disabled>-- Pilih Jenis Produk --</option>
+                @foreach ($jenis as $item)
+                    <option value="{{ $item->id }}" {{ old('jenis_id') == $item->id ? 'selected' : '' }}>
+                        {{ $item->nama_jenis ?? $item->nama }}
+                    </option>
+                @endforeach
+            </select>
+            @error('jenis_id')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
@@ -90,7 +110,7 @@
 
         {{-- Tombol Aksi --}}
         <button type="submit" class="btn btn-success">Simpan</button>
-        <a href="{{ route('admin.produk.index') }}" class="btn btn-secondary">Kembali</a>
+        <a href="{{ route('produk.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection

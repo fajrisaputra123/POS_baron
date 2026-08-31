@@ -27,7 +27,7 @@ class JenisController extends Controller
 
     public function create()
     {
-        $this->authorize('viewAny', Jenis::class);
+        $this->authorize('create', Jenis::class);
 
         // Inisialisasi model kosong untuk mode Create
         $jenis = new Jenis();
@@ -35,29 +35,29 @@ class JenisController extends Controller
         return view('jenis.create', compact('jenis'));
     }
 
-   public function store(Request $request)
-{
-    $this->authorize('create', Jenis::class);
+    public function store(Request $request)
+    {
+        $this->authorize('create', Jenis::class);
 
-    $validated = $request->validate([
-        'nama_jenis' => 'required|string|max:255|unique:jenis,nama_jenis',
-    ]);
+        $validated = $request->validate([
+            'nama_jenis' => 'required|string|max:255|unique:jenis,nama_jenis',
+        ]);
 
-    // Simpan hanya data yang sudah divalidasi (nama_jenis)
-    Jenis::create($validated);
+        Jenis::create($validated);
 
-    return redirect()->route('jenis.index')->with('success', 'Jenis berhasil ditambahkan.');
-}
+        return redirect()->route('jenis.index')->with('success', 'Jenis berhasil ditambahkan.');
+    }
+
     public function edit(Jenis $jenis)
     {
-        $this->authorize('viewAny', Jenis::class);
+        $this->authorize('update', $jenis);
 
         return view('jenis.edit', compact('jenis'));
     }
 
     public function update(Request $request, Jenis $jenis)
     {
-        $this->authorize('viewAny', Jenis::class);
+        $this->authorize('update', $jenis);
 
         $request->validate([
             'nama_jenis' => 'required|string|max:255|unique:jenis,nama_jenis,' . $jenis->id,
@@ -73,7 +73,7 @@ class JenisController extends Controller
         $this->authorize('delete', $jenis);
 
         if ($jenis->produk()->exists()) {
-            return back()->with('errors', 'Jenis tidak bisa dihapus karena masih dipakai produk.');
+            return back()->with('error', 'Jenis tidak bisa dihapus karena masih dipakai produk.');
         }
 
         $jenis->delete();

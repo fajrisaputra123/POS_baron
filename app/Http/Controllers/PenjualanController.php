@@ -61,6 +61,20 @@ class PenjualanController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Penjualan $penjualan)
+    {
+        $request->validate([
+            'metode_pembayaran' => 'nullable|in:CASH,QRIS,TRANSFER',
+        ]);
+
+        $penjualan->update($request->only(['metode_pembayaran', 'status', 'total_pembayaran']));
+
+        return redirect()->back()->with('success', 'Data penjualan berhasil diperbarui.');
+    }
+
+    /**
      * Selesaikan proses checkout pembayaran.
      */
     public function checkout(Request $request, Penjualan $penjualan)

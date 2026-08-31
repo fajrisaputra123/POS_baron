@@ -12,7 +12,7 @@ use App\Http\Controllers\UserController;
 // Route yang bisa diakses ketika user belum login 
 Route::middleware('guest')->group(function () { 
     Route::get('/login', [AuthController::class, 'index'])->name('login');
-    Route::post('/auth', [AuthController::class, 'auth'])->name('auth');
+    Route::post('/auth', [AuthController::class, 'authenticate'])->name('auth');
 });
 
 // Route yang bisa diakses ketika user sudah login 

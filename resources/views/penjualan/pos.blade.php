@@ -142,12 +142,10 @@
 
             {{-- Form Process/Checkout --}}
             <form method="POST" 
-                  action="{{ isset($mode) && $mode === 'edit' ? route('penjualan.update', $sale->id) : route('penjualan.checkout', $sale->id) }}" 
+                  action="{{ route('penjualan.update', $sale->id) }}" 
                   onsubmit="return confirm('Yakin ingin memproses transaksi ini?')">
                 @csrf
-                @if(isset($mode) && $mode === 'edit')
-                    @method('PUT')
-                @endif
+                @method('PUT')
 
                 <select name="payment_method" class="form-select mb-2" required {{ isset($sale) && $sale->status === 'COMPLETED' ? 'disabled' : '' }}>
                     <option value="">Pilih Pembayaran</option>

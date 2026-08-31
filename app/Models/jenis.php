@@ -2,22 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Jenis extends Model
 {
     use HasFactory;
 
     protected $table = 'jenis';
+    protected $fillable = ['nama_jenis'];
 
-    protected $fillable = [
-        'nama_jenis',
-        'user_id',
-    ];
-
+    /**
+     * Relasi ke model Produk
+     */
     public function produk()
     {
-        return $this->hasMany(Produk::class, 'jenis_id');
+        // Gunakan standar Laravel (otomatis membaca kolom jenis_id di tabel produk)
+        return $this->hasMany(Produk::class);
     }
 }
