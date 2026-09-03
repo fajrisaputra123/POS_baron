@@ -61,6 +61,25 @@ class PenjualanController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Penjualan $penjualan)
+    {
+        if ($penjualan->status === 'CLOSED') {
+            return redirect()->route('penjualan.index')
+                ->with('error', 'Transaksi yang sudah selesai tidak bisa diedit.');
+        }
+
+        $penjualan->load('itemPenjualan.produk');
+
+        $sale = $penjualan;
+        $products = Produk::orderBy('nama')->get();
+        $mode = 'edit';
+
+        return view('penjualan.pos', compact('sale', 'products', 'mode'));
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Penjualan $penjualan)

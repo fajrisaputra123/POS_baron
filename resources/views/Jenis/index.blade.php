@@ -26,7 +26,7 @@
             @can('create', App\Models\Jenis::class)
             <a href="{{ route('jenis.create') }}" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm px-3">
                 <i class="bi bi-plus-lg"></i>
-                <span>Tambah Jenis</span>
+                <span>Create</span>
             </a>
             @endcan
         </div>

@@ -15,7 +15,7 @@
                 <h4 class="fw-bold mb-0 text-dark">Daftar Produk</h4>
                 @can('create', App\Models\Produk::class)
                     <a href="{{ route('produk.create') }}" class="btn btn-primary fw-semibold px-3 py-2 rounded-3 shadow-sm">
-                        + Tambah Produk
+                        +Create
                     </a>
                 @endcan
             </div>
