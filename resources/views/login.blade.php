@@ -1,120 +1,171 @@
 <!-- memanggil file app.blade.php -->
 @extends('layouts.app')
 
-<!-- mengirimkan nilai ke tittle untuk ditampilkan -->
+<!-- mengirimkan nilai ke title untuk ditampilkan -->
 @section('title', 'Login POS')
 
 <!-- batas awal isi konten -->
 @section('content')
-<div class="login-wrapper d-flex align-items-center justify-content-center">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-5 col-lg-4">
+<div class="login-wrapper d-flex align-items-center justify-content-center p-3">
+    <div class="card border-0 login-card w-100">
+        <div class="card-body p-4 p-sm-5 text-center">
+            
+            {{-- Logo / Branding --}}
+            <div class="brand-logo mb-3">
+                <div class="logo-icon">
+                    <i class="bi bi-box-seam-fill fs-3 text-white"></i>
+                </div>
+            </div>
+
+            <h3 class="fw-bold text-white mb-1 tracking-tight">POS System</h3>
+            <p class="text-white-50 small mb-4">Masuk ke sistem kasir untuk memulai transaksi</p>
+
+            {{-- Alert Error --}}
+            @if ($errors->any())
+                <div class="alert alert-danger border-0 bg-danger bg-opacity-20 text-danger-light text-start small py-2.5 px-3 mb-4 rounded-3" role="alert">
+                    <i class="bi bi-exclamation-circle-fill me-1"></i> Email atau password salah.
+                </div>
+            @endif
+
+            {{-- Form Login --}}
+            <form action="{{ route('login.post') }}" method="POST">
+                @csrf
                 
-                <!-- Card Login Modern -->
-                <div class="card border-0 shadow-lg login-card">
-                    
-                    <!-- Header Card dengan Desain Kece -->
-                    <div class="card-header border-0 text-center py-4 bg-primary text-white position-relative overflow-hidden">
-                        <div class="login-header-bg"></div>
-                        <h4 class="fw-bold mb-1 position-relative z-index-2">Login POS</h4>
-                        <p class="small text-white-50 mb-0 position-relative z-index-2">Silakan masuk ke akun Anda</p>
-                    </div>
-
-                    <!-- Body Card -->
-                    <div class="card-body p-4 p-sm-5">
-                        
-                        <!-- Form Login (Tetap menggunakan route('auth') sesuai kodingan aslimu) -->
-                        <form action="{{ route('auth') }}" method="POST">
-                            @csrf
-                            
-                            <!-- Input Email -->
-                            <div class="mb-3 text-start">
-                                <label for="exampleInputEmail1" class="form-label text-secondary small fw-bold">Email address</label>
-                                <input type="email" name="email" class="form-control form-control-lg fs-6" 
-                                    id="exampleInputEmail1" placeholder="nama@email.com" required autofocus>
-                            </div>
-
-                            <!-- Input Password -->
-                            <div class="mb-4 text-start">
-                                <label for="exampleInputPassword1" class="form-label text-secondary small fw-bold">Password</label>
-                                <input type="password" name="password" class="form-control form-control-lg fs-6" 
-                                    id="exampleInputPassword1" placeholder="Masukkan password" required>
-                            </div>
-
-                            <!-- Tombol Submit Lebar Penuh -->
-                            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm py-2 fs-6">
-                                Masuk Aplikasi
-                            </button>
-                        </form>
-
+                {{-- Input Email --}}
+                <div class="mb-3 text-start">
+                    <label for="email" class="form-label text-white-50 small fw-medium">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text border-0 text-white-50">
+                            <i class="bi bi-envelope-fill"></i>
+                        </span>
+                        <input type="email" name="email" id="email" 
+                            class="form-control border-0 text-white placeholder-muted" 
+                            placeholder="nama@perusahaan.com" value="{{ old('email') }}" required autofocus>
                     </div>
                 </div>
 
-                <!-- Footer Kecil -->
-                <p class="text-center text-muted small mt-4">&copy; {{ date('Y') }} POS System.</p>
+                {{-- Input Password --}}
+                <div class="mb-4 text-start">
+                    <label for="password" class="form-label text-white-50 small fw-medium">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text border-0 text-white-50">
+                            <i class="bi bi-lock-fill"></i>
+                        </span>
+                        <input type="password" name="password" id="password" 
+                            class="form-control border-0 text-white placeholder-muted" 
+                            placeholder="••••••••" required>
+                    </div>
+                </div>
 
+                {{-- Tombol Submit --}}
+                <button type="submit" class="btn btn-gradient w-100 fw-semibold text-white py-2-5 mb-3">
+                    Masuk ke Dasbor
+                </button>
+            </form>
+
+            {{-- Footer --}}
+            <div class="pt-2">
+                <small class="text-white-50" style="font-size: 0.75rem;">&copy; {{ date('Y') }} POS System. Designed for Enterprise.</small>
             </div>
+
         </div>
     </div>
 </div>
 
-<!-- Kustom CSS khusus untuk centering dan mempercantik -->
 <style>
-    /* Membuat halaman memenuhi tinggi layar dan background abu-abu soft modern */
+    /* Gradient Background - Dark Navy Elegant */
     .login-wrapper {
         min-height: 100vh;
-        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);
     }
 
-    /* Membuat kartu login melengkung halus */
+    /* Glassmorphism Card Style */
     .login-card {
-        border-radius: 16px;
+        max-width: 420px;
+        background: rgba(255, 255, 255, 0.04) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 24px !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Icon Logo Glow Effect */
+    .brand-logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5);
+    }
+
+    /* Custom Form Styling */
+    .input-group {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
         overflow: hidden;
-        background: #ffffff;
+        transition: all 0.3s ease;
     }
 
-    /* Modifikasi input form agar lebih elegan saat diklik */
-    .form-control-lg {
-        border-radius: 10px;
-        padding: 0.6rem 1rem;
-        border: 1px solid #ced4da;
-        background-color: #f8fafc;
-        transition: all 0.2s ease-in-out;
+    .input-group:focus-within {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        background: rgba(255, 255, 255, 0.08);
     }
 
-    .form-control-lg:focus {
-        background-color: #fff;
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    .input-group-text {
+        background: transparent !important;
+        padding-left: 1.2rem;
     }
 
-    /* Tombol login dengan efek transisi */
-    .btn-lg {
-        border-radius: 10px;
-        transition: all 0.2s;
-    }
-    
-    .btn-lg:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+    .form-control {
+        background: transparent !important;
+        padding: 0.75rem 1rem 0.75rem 0.5rem;
+        font-size: 0.95rem;
     }
 
-    /* Ornamen gradasi di background header */
-    .login-header-bg {
-        position: absolute;
-        top: -50%;
-        left: -20%;
-        width: 140%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
-        transform: rotate(-15deg);
-        z-index: 1;
+    .form-control:focus {
+        box-shadow: none !important;
     }
-    
-    .z-index-2 {
-        position: relative;
-        z-index: 2;
+
+    .placeholder-muted::placeholder {
+        color: rgba(255, 255, 255, 0.3) !important;
+    }
+
+    /* Button Gradient & Glow */
+    .btn-gradient {
+        background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+        border: none;
+        border-radius: 14px;
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+        box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 25px -5px rgba(79, 70, 229, 0.5);
+    }
+
+    .btn-gradient:active {
+        transform: translateY(0);
+    }
+
+    .text-danger-light {
+        color: #fca5a5;
     }
 </style>
 @endsection
