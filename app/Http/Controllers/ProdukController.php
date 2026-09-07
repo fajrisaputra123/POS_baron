@@ -8,7 +8,6 @@ use App\Http\Requests\SearchRequest;
 use App\Models\Produk;
 use App\Models\Jenis;
 use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -60,7 +59,7 @@ class ProdukController extends Controller
             'harga_beli' => $dataReq['purchase_price'] ?? $dataReq['harga_beli'],
             'harga_jual' => $dataReq['selling_price'] ?? $dataReq['harga_jual'],
             'stok'       => $dataReq['stock'] ?? $dataReq['stok'],
-            'foto'       => null, // Menghindari error default value jika foto tidak diunggah
+            'foto'       => null,
         ];
 
         if ($request->hasFile('foto')) {
@@ -125,27 +124,29 @@ class ProdukController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Produk $produk)
-    {
-        $this->authorize('delete', $produk);
+   public function destroy(Produk $produk)
+{
+    $this->authorize('delete', $produk);
 
-        try {
-            if ($produk->foto && Storage::disk('public')->exists($produk->foto)) {
-                Storage::disk('public')->delete($produk->foto);
-            }
+    try {
+        // 1. Hapus dulu semua item transaksi yang memakai produk ini
+        $produk->itemPenjualan()->delete();
 
-            $produk->delete();
+        // 2. Simpan path foto
+        $fotoPath = $produk->foto;
 
-            return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus.');
-        } catch (QueryException $e) {
-            if ($e->getCode() == '23000') {
-                return redirect()->route('produk.index')->with(
-                    'error',
-                    'Gagal menghapus! Produk ini sudah terikat dengan riwayat transaksi penjualan.'
-                );
-            }
+        // 3. Hapus produk dari database
+        $produk->delete();
 
-            return redirect()->route('produk.index')->with('error', 'Terjadi kesalahan saat menghapus produk.');
+        // 4. Hapus file foto dari storage jika ada
+        if ($fotoPath && Storage::disk('public')->exists($fotoPath)) {
+            Storage::disk('public')->delete($fotoPath);
         }
+
+        return redirect()->route('produk.index')->with('success', 'Produk beserta riwayatnya berhasil dihapus.');
+
+    } catch (\Exception $e) {
+        return redirect()->route('produk.index')->with('error', 'Gagal menghapus produk: ' . $e->getMessage());
     }
+}
 }

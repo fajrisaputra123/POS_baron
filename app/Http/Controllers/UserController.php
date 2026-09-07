@@ -70,6 +70,9 @@ class UserController extends Controller
     /**
      * Memperbarui data user di database
      */
+    /**
+     * Memperbarui data user di database
+     */
     public function update(UpdateRequest $request, User $user)
     {
         $dataReq = $request->validated();
@@ -84,7 +87,8 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->route('admin.users.edit', $user->id)->with('success', 'User updated');
+        // UBAH BARIS INI: Dari 'admin.users.edit' menjadi 'admin.users'
+        return redirect()->route('admin.users')->with('success', 'Data user berhasil diperbarui!');
     }
 
     /**

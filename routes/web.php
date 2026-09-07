@@ -25,8 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Route Khusus Admin
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+    // Izinkan admin dan kasir
+    Route::middleware('role:admin,kasir')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users');
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
         Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
