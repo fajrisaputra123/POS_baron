@@ -15,7 +15,7 @@ Route::get('/', function () {
 });
 
 // Route yang hanya bisa diakses ketika user BELUM login 
-Route::middleware('guest')->group(function () { 
+Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'index'])->name('login');
     Route::post('/login', [AuthController::class, 'authenticate'])->name('login.post'); // Diperbaiki dari /auth ke /login
 });
@@ -35,9 +35,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/users/destroy/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
-    // Route untuk Admin dan Kasir
     Route::middleware('role:admin,kasir')->group(function () {
         Route::resource('/produk', ProdukController::class);
+        Route::post('/penjualan/{penjualan}/checkout', [PenjualanController::class, 'checkout'])->name('penjualan.checkout');
         Route::resource('/penjualan', PenjualanController::class);
         Route::resource('/item-penjualan', ItemPenjualanController::class);
         Route::resource('jenis', JenisController::class)->parameters([
