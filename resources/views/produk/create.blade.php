@@ -12,12 +12,23 @@
         {{-- Input Gambar / Foto Produk --}}
         <div class="mb-3">
             <label for="foto" class="form-label">Foto Produk</label>
+            
+            <!-- Area Preview Gambar -->
+            <div class="mb-2">
+                <img id="img-preview" 
+                     src="https://via.placeholder.com/150?text=No+Image" 
+                     alt="Preview Foto" 
+                     class="img-thumbnail" 
+                     style="max-width: 150px; height: 150px; object-fit: cover;">
+            </div>
+
             <input 
                 type="file" 
                 name="foto" 
                 id="foto" 
                 class="form-control @error('foto') is-invalid @enderror"
                 accept="image/*"
+                onchange="previewImage(event)"
             >
             @error('foto')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -113,4 +124,20 @@
         <a href="{{ route('produk.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
+
+<!-- Script untuk Pratinjau Foto -->
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('img-preview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection
