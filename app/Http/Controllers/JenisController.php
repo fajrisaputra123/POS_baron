@@ -10,8 +10,6 @@ class JenisController extends Controller
 {
     public function index(SearchRequest $request)
     {
-        $this->authorize('viewAny', Jenis::class);
-
         $keyword = $request->input('search');
 
         $jenis = Jenis::when($keyword, function ($query) use ($keyword) {
@@ -27,8 +25,6 @@ class JenisController extends Controller
 
     public function create()
     {
-        $this->authorize('create', Jenis::class);
-
         // Inisialisasi model kosong untuk mode Create
         $jenis = new Jenis();
 
@@ -37,8 +33,6 @@ class JenisController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('create', Jenis::class);
-
         $validated = $request->validate([
             'nama_jenis' => 'required|string|max:255|unique:jenis,nama_jenis',
         ]);
@@ -50,15 +44,11 @@ class JenisController extends Controller
 
     public function edit(Jenis $jenis)
     {
-        $this->authorize('update', $jenis);
-
         return view('jenis.edit', compact('jenis'));
     }
 
     public function update(Request $request, Jenis $jenis)
     {
-        $this->authorize('update', $jenis);
-
         $request->validate([
             'nama_jenis' => 'required|string|max:255|unique:jenis,nama_jenis,' . $jenis->id,
         ]);
@@ -70,8 +60,6 @@ class JenisController extends Controller
 
     public function destroy(Jenis $jenis)
     {
-        $this->authorize('delete', $jenis);
-
         if ($jenis->produk()->exists()) {
             return back()->with('error', 'Jenis tidak bisa dihapus karena masih dipakai produk.');
         }

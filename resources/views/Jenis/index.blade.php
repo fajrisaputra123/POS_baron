@@ -23,12 +23,10 @@
             <h1 class="h3 fw-bold text-dark mb-1">Daftar Jenis</h1>
         </div>
         <div>
-            @can('create', App\Models\Jenis::class)
             <a href="{{ route('jenis.create') }}" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm px-3">
                 <i class="bi bi-plus-lg"></i>
                 <span>Create</span>
             </a>
-            @endcan
         </div>
     </div>
 
@@ -75,13 +73,10 @@
                         </td>
                         <td class="text-center pe-4">
                             <div class="d-inline-flex align-items-center gap-1">
-                                @can('update', $item)
                                 <a href="{{ route('jenis.edit', $item->id) }}" class="btn btn-sm btn-outline-warning">
                                     Edit
                                 </a>
-                                @endcan
 
-                                @can('delete', $item)
                                 <form action="{{ route('jenis.destroy', $item->id) }}" method="POST" class="d-inline">
                                     @csrf 
                                     @method('DELETE')
@@ -89,7 +84,6 @@
                                         Hapus
                                     </button>
                                 </form>
-                                @endcan
                             </div>
                         </td>
                     </tr>

@@ -98,9 +98,9 @@ class PenjualanController extends Controller
      */
     public function checkout(Request $request, Penjualan $penjualan)
     {
-        // 1. Cukup validasi metode_pembayaran saja (hapus validasi bayar)
         $request->validate([
             'metode_pembayaran' => 'required|in:CASH,QRIS,TRANSFER',
+            'bayar'             => 'nullable|numeric|min:0',
         ]);
 
         // Cek jika keranjang kosong
@@ -108,17 +108,35 @@ class PenjualanController extends Controller
             return back()->with('error', 'Keranjang belanja masih kosong.');
         }
 
-        DB::transaction(function () use ($request, $penjualan) {
-            // 2. Set uang bayar sama dengan total pembayaran (uang pas)
+        $totalPembayaran = $penjualan->total_pembayaran;
+        $bayar = $request->input('bayar', $totalPembayaran);
+
+        // Jika transaksi CASH, pastikan pembayaran mencukupi
+        if ($request->metode_pembayaran === 'CASH' && $bayar < $totalPembayaran) {
+            return back()->with('error', 'Uang pembayaran kurang!');
+        }
+
+        $kembalian = max(0, $bayar - $totalPembayaran);
+
+        DB::transaction(function () use ($request, $penjualan, $bayar, $kembalian) {
             $penjualan->update([
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'bayar'             => $penjualan->total_pembayaran, // Otomatis diset uang pas
-                'kembalian'         => 0,                            // Kembalian 0
+                'bayar'             => $bayar,
+                'kembalian'         => $kembalian,
                 'status'            => 'CLOSED',
             ]);
         });
 
         return redirect()->route('penjualan.index')->with('success', 'Transaksi berhasil diselesaikan.');
+    }
+
+    /**
+     * Menampilkan halaman cetak struk thermal
+     */
+    public function cetakStruk($id)
+    {
+        $sale = Penjualan::with(['itemPenjualan.produk', 'user'])->findOrFail($id);
+        return view('penjualan.struk', compact('sale'));
     }
 
     /**

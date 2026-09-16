@@ -15,7 +15,7 @@
         </div>
     @endif
 
-    {{-- Alert Error Kustom (dari redirect with('error', ...)) --}}
+    {{-- Alert Error Kustom --}}
     @if (session('error'))
         <div class="alert alert-danger mb-3">
             {{ session('error') }}
@@ -37,7 +37,7 @@
 
         {{-- =================== PRODUK =================== --}}
         <div class="col-md-6">
-            <div class="card">
+            <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-body" style="max-height:70vh; overflow:auto">
                     <div class="mb-3">
                         <form method="GET"
@@ -57,7 +57,7 @@
                                 <button type="submit"
                                     class="btn btn-outline-primary w-100 text-start p-2 {{ isset($sale) && $sale->status === 'COMPLETED' ? 'disabled' : '' }}">
                                     <div class="d-flex align-items-center gap-2">
-                                        <img src="{{ asset('storage/' . $product->foto) }}" alt="Gambar"
+                                        <img src="{{ $product->foto ? asset('storage/' . $product->foto) : 'https://via.placeholder.com/45?text=No+Img' }}" alt="Gambar"
                                             class="rounded-circle" style="width:45px; height:45px; object-fit:cover;">
 
                                         <div>
@@ -88,9 +88,9 @@
 
         {{-- =================== KERANJANG =================== --}}
         <div class="col-md-6">
-            <div class="card">
-                <table class="table table-bordered mb-0">
-                    <thead>
+            <div class="card border-0 shadow-sm rounded-3">
+                <table class="table table-bordered mb-0 align-middle">
+                    <thead class="table-light">
                         <tr>
                             <th>Produk</th>
                             <th>Harga</th>
@@ -109,7 +109,7 @@
                                         @csrf
                                         @method('PUT')
                                         <input type="number" name="kuantitas" value="{{ $item->kuantitas }}"
-                                            min="1" class="form-control form-control-sm"
+                                            min="1" class="form-control form-control-sm text-center"
                                             onchange="this.form.submit()"
                                             {{ isset($sale) && $sale->status === 'COMPLETED' ? 'disabled' : '' }}>
                                     </form>
@@ -128,14 +128,14 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted">Belum ada item di keranjang</td>
+                                <td colspan="5" class="text-center text-muted py-3">Belum ada item di keranjang</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
 
-                <div class="card-footer">
-                    <div class="fs-5 fw-bold mb-2">
+                <div class="card-footer bg-white p-3 border-top-0">
+                    <div class="fs-5 fw-bold mb-3">
                         Total: Rp
                         {{ number_format($sale->itemPenjualan? $sale->itemPenjualan->sum(function ($item) {return $item->subtotal ?? $item->kuantitas * ($item->produk->harga_jual ?? 0);}): 0,0,',','.') }}
                     </div>
@@ -145,10 +145,8 @@
                         onsubmit="return confirm('Yakin ingin memproses transaksi ini?')">
                         @csrf
 
-                        {{-- Hapus @method('PUT') karena route checkout menggunakan POST --}}
-
-                        {{-- Ubah name="payment_method" menjadi name="metode_pembayaran" --}}
-                        <select name="metode_pembayaran" class="form-select mb-2" required
+                        <select name="metode_pembayaran" id="metode_pembayaran" class="form-select mb-2 fw-semibold" required
+                            onchange="toggleQrisDisplay(this.value)"
                             {{ isset($sale) && $sale->status === 'COMPLETED' ? 'disabled' : '' }}>
                             <option value="">Pilih Pembayaran</option>
                             <option value="CASH"
@@ -160,11 +158,24 @@
                             </option>
                         </select>
 
+                        {{-- Box Foto QRIS (Default Tersembunyi) --}}
+                        <div id="qris-box" class="text-center p-3 mb-2 bg-light border rounded-3 d-none">
+                            <small class="fw-bold text-muted d-block mb-2">Scan QRIS di Bawah Ini:</small>
+                            <div class="bg-white p-2 d-inline-block rounded border shadow-sm">
+                              <img src="{{ asset('imeg/qris.jpeg') }}"
+                                     alt="QRIS Pembayaran" 
+                                     class="img-fluid rounded" 
+                                     style="max-width: 200px;"
+                                     onerror="this.onerror=null;this.src='https://via.placeholder.com/200x200?text=Foto+QRIS+Belum+Ada';">
+                            </div>
+                        </div>
+
                         <button type="submit"
-                            class="btn btn-success w-100 {{ isset($sale) && $sale->status === 'COMPLETED' ? 'disabled' : '' }}">
+                            class="btn btn-success w-100 py-2 fw-semibold {{ isset($sale) && $sale->status === 'COMPLETED' ? 'disabled' : '' }}">
                             {{ isset($mode) && $mode === 'edit' ? 'Update Transaksi' : 'Checkout' }}
                         </button>
                     </form>
+
                     {{-- Form Pembatalan Transaksi --}}
                     <form action="{{ route('penjualan.destroy', $sale->id) }}" method="POST"
                         onsubmit="return confirm('Yakin ingin membatalkan transaksi?')" class="mt-2">
@@ -172,7 +183,7 @@
                         @method('DELETE')
 
                         <button type="submit"
-                            class="btn btn-outline-danger w-100 {{ isset($sale) && $sale->status === 'COMPLETED' ? 'disabled' : '' }}">
+                            class="btn btn-outline-danger w-100 py-2 fw-semibold {{ isset($sale) && $sale->status === 'COMPLETED' ? 'disabled' : '' }}">
                             Batalkan Transaksi
                         </button>
                     </form>
@@ -181,5 +192,25 @@
         </div>
 
     </div>
+
+    {{-- Script Kontrol Tampilan QRIS --}}
+    <script>
+        function toggleQrisDisplay(val) {
+            const qrisBox = document.getElementById('qris-box');
+            if (val === 'QRIS') {
+                qrisBox.classList.remove('d-none');
+            } else {
+                qrisBox.classList.add('d-none');
+            }
+        }
+
+        // Jalankan pengecekan saat halaman pertama kali dimuat (misal pada mode edit)
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectPembayaran = document.getElementById('metode_pembayaran');
+            if (selectPembayaran) {
+                toggleQrisDisplay(selectPembayaran.value);
+            }
+        });
+    </script>
 
 @endsection

@@ -1,142 +1,108 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-4">
-    <h2>Tambah Produk</h2>
+@include('layouts.navbar')
 
-    <form action="{{ route('produk.store') }}" 
-          method="POST" 
-          enctype="multipart/form-data">
-        @csrf
-
-        {{-- Input Gambar / Foto Produk --}}
-        <div class="mb-3">
-            <label for="foto" class="form-label">Foto Produk</label>
-            
-            <!-- Area Preview Gambar -->
-            <div class="mb-2">
-                <img id="img-preview" 
-                     src="https://via.placeholder.com/150?text=No+Image" 
-                     alt="Preview Foto" 
-                     class="img-thumbnail" 
-                     style="max-width: 150px; height: 150px; object-fit: cover;">
-            </div>
-
-            <input 
-                type="file" 
-                name="foto" 
-                id="foto" 
-                class="form-control @error('foto') is-invalid @enderror"
-                accept="image/*"
-                onchange="previewImage(event)"
-            >
-            @error('foto')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white py-3 px-4 border-bottom-0">
+            <h4 class="fw-bold mb-0 text-dark">Tambah Produk</h4>
         </div>
+        <div class="card-body px-4">
+            <form action="{{ route('produk.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
 
-        {{-- Input Pilihan Jenis Produk --}}
-        <div class="mb-3">
-            <label for="jenis_id" class="form-label">Jenis Produk</label>
-            <select 
-                name="jenis_id" 
-                id="jenis_id" 
-                class="form-select @error('jenis_id') is-invalid @enderror"
-            >
-                <option value="" selected disabled>-- Pilih Jenis Produk --</option>
-                @foreach ($jenis as $item)
-                    <option value="{{ $item->id }}" {{ old('jenis_id') == $item->id ? 'selected' : '' }}>
-                        {{ $item->nama_jenis ?? $item->nama }}
-                    </option>
-                @endforeach
-            </select>
-            @error('jenis_id')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+                <div class="row g-4">
+                    <!-- Kolom Kiri: Form Input Data -->
+                    <div class="col-lg-8">
+                        <div class="mb-3">
+                            <label for="jenis_id" class="form-label fw-semibold">Jenis Produk</label>
+                            <select name="jenis_id" id="jenis_id" class="form-select @error('jenis_id') is-invalid @enderror" required>
+                                <option value="">-- Pilih Jenis Produk --</option>
+                                @foreach($jenis as $item)
+                                    <option value="{{ $item->id }}" {{ old('jenis_id') == $item->id ? 'selected' : '' }}>
+                                        {{ $item->nama_jenis ?? $item->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('jenis_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nama" class="form-label fw-semibold">Nama Produk</label>
+                            <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}" required placeholder="Masukkan nama produk">
+                            @error('nama')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="harga_beli" class="form-label fw-semibold">Harga Beli</label>
+                                <input type="number" name="harga_beli" id="harga_beli" class="form-control @error('harga_beli') is-invalid @enderror" value="{{ old('harga_beli') }}" required placeholder="0">
+                                @error('harga_beli')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="harga_jual" class="form-label fw-semibold">Harga Jual</label>
+                                <input type="number" name="harga_jual" id="harga_jual" class="form-control @error('harga_jual') is-invalid @enderror" value="{{ old('harga_jual') }}" required placeholder="0">
+                                @error('harga_jual')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="stok" class="form-label fw-semibold">Stok</label>
+                            <input type="number" name="stok" id="stok" class="form-control @error('stok') is-invalid @enderror" value="{{ old('stok') }}" required placeholder="0">
+                            @error('stok')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Input Foto & Preview Ringkas -->
+                    <div class="col-lg-4">
+                        <div class="p-3 bg-light rounded-3 border text-center">
+                            <label for="foto" class="form-label fw-semibold d-block text-start mb-2">Foto Produk</label>
+                            
+                            <!-- Box Preview Ukuran Ringkas -->
+                            <div class="mb-3 d-flex justify-content-center align-items-center bg-white rounded-3 border overflow-hidden mx-auto" style="width: 150px; height: 150px;">
+                                <img id="preview-img" src="https://via.placeholder.com/150?text=Preview" alt="Preview Foto" class="img-fluid object-fit-cover w-100 h-100">
+                            </div>
+
+                            <input type="file" name="foto" id="foto" class="form-control form-control-sm @error('foto') is-invalid @enderror" accept="image/*" onchange="previewImage(event)">
+                            <small class="text-muted d-block mt-2 fs-7">Format: JPG, JPEG, PNG (Maks. 2MB)</small>
+                            @error('foto')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi -->
+                <div class="mt-4 pt-3 border-top d-flex gap-2">
+                    <button type="submit" class="btn btn-success px-4 fw-semibold">Simpan</button>
+                    <a href="{{ route('produk.index') }}" class="btn btn-secondary px-4 fw-semibold">Kembali</a>
+                </div>
+            </form>
         </div>
-
-        {{-- Input Nama Produk --}}
-        <div class="mb-3">
-            <label for="name" class="form-label">Nama Produk</label>
-            <input 
-                type="text" 
-                name="name" 
-                id="name" 
-                class="form-control @error('name') is-invalid @enderror" 
-                value="{{ old('name') }}" 
-                required
-            >
-            @error('name')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Input Harga Beli --}}
-        <div class="mb-3">
-            <label for="purchase_price" class="form-label">Harga Beli</label>
-            <input 
-                type="number" 
-                name="purchase_price" 
-                id="purchase_price" 
-                class="form-control @error('purchase_price') is-invalid @enderror" 
-                value="{{ old('purchase_price') }}" 
-                required
-            >
-            @error('purchase_price')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Input Harga Jual --}}
-        <div class="mb-3">
-            <label for="selling_price" class="form-label">Harga Jual</label>
-            <input 
-                type="number" 
-                name="selling_price" 
-                id="selling_price" 
-                class="form-control @error('selling_price') is-invalid @enderror" 
-                value="{{ old('selling_price') }}" 
-                required
-            >
-            @error('selling_price')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Input Stok --}}
-        <div class="mb-3">
-            <label for="stock" class="form-label">Stok</label>
-            <input 
-                type="number" 
-                name="stock" 
-                id="stock" 
-                class="form-control @error('stock') is-invalid @enderror" 
-                value="{{ old('stock') }}" 
-                required
-            >
-            @error('stock')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Tombol Aksi --}}
-        <button type="submit" class="btn btn-success">Simpan</button>
-        <a href="{{ route('produk.index') }}" class="btn btn-secondary">Kembali</a>
-    </form>
+    </div>
 </div>
 
-<!-- Script untuk Pratinjau Foto -->
 <script>
     function previewImage(event) {
-        const input = event.target;
-        const preview = document.getElementById('img-preview');
-
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-            }
-            reader.readAsDataURL(input.files[0]);
+        const reader = new FileReader();
+        reader.onload = function() {
+            const output = document.getElementById('preview-img');
+            output.src = reader.result;
+        };
+        if(event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
         }
     }
 </script>

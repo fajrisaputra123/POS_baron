@@ -10,12 +10,19 @@
         <!-- Card Container Utama -->
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             
-            <!-- Card Header -->
+            <!-- Card Header (Tombol Struk dipindah ke samping + Create) -->
             <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom-0">
                 <h4 class="fw-bold mb-0 text-dark">Halaman Penjualan</h4>
-                <a href="{{ route('penjualan.create') }}" class="btn btn-primary fw-semibold px-3 py-2 rounded-3 shadow-sm">
-                    + Create
-                </a>
+                <div class="d-flex gap-2">
+                    @if($sales->first())
+                        <a href="{{ route('penjualan.cetak', $sales->first()->id) }}" target="_blank" class="btn btn-secondary fw-semibold px-3 py-2 rounded-3 shadow-sm">
+                            Cetak Struk Transaksi Terakhir
+                        </a>
+                    @endif
+                    <a href="{{ route('penjualan.create') }}" class="btn btn-primary fw-semibold px-3 py-2 rounded-3 shadow-sm">
+                        + Create
+                    </a>
+                </div>
             </div>
 
             <!-- Card Body / Form Pencarian -->
@@ -39,6 +46,8 @@
                             <th scope="col" class="py-3">Tanggal Transaksi</th>
                             <th scope="col" class="py-3">Kasir</th>
                             <th scope="col" class="py-3">Total Pembayaran</th>
+                            <th scope="col" class="py-3">Dibayar</th>
+                            <th scope="col" class="py-3">Kembalian</th>
                             <th scope="col" class="py-3 text-center">Metode Pembayaran</th>
                             <th scope="col" class="py-3 text-center">Status</th>
                             <th scope="col" class="pe-4 py-3 text-center" style="width: 200px;">Aksi</th>
@@ -54,6 +63,16 @@
                                 <td class="fw-medium text-dark">{{ $sale->user->name ?? '-' }}</td>
                                 <td class="fw-bold text-success">
                                     Rp {{ number_format($sale->total_pembayaran, 0, ',', '.') }}
+                                </td>
+                                
+                                <!-- Kolom Dibayar -->
+                                <td class="fw-medium text-dark">
+                                    Rp {{ number_format($sale->bayar ?? 0, 0, ',', '.') }}
+                                </td>
+
+                                <!-- Kolom Kembalian -->
+                                <td class="fw-medium text-primary">
+                                    Rp {{ number_format($sale->kembalian ?? 0, 0, ',', '.') }}
                                 </td>
                                 
                                 <!-- Badge Metode Pembayaran -->
@@ -76,7 +95,7 @@
                                     @endif
                                 </td>
 
-                                <!-- Tombol Aksi -->
+                                <!-- Tombol Aksi (Tanpa Struk) -->
                                 <td class="pe-4 text-center">
                                     <div class="d-inline-flex gap-1">
                                         <a href="{{ route('penjualan.show', $sale->id) }}" class="btn btn-sm btn-info text-white fw-semibold px-2 py-1 shadow-sm">
@@ -98,7 +117,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
+                                <td colspan="9" class="text-center py-5 text-muted">
                                     <p class="mb-0 fs-5 fw-semibold">Data Tidak Ditemukan</p>
                                 </td>
                             </tr>

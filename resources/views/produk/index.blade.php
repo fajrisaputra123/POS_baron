@@ -13,11 +13,9 @@
             <!-- Card Header -->
             <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom-0">
                 <h4 class="fw-bold mb-0 text-dark">Daftar Produk</h4>
-                @can('create', App\Models\Produk::class)
-                    <a href="{{ route('produk.create') }}" class="btn btn-primary fw-semibold px-3 py-2 rounded-3 shadow-sm">
-                        +Create
-                    </a>
-                @endcan
+                <a href="{{ route('produk.create') }}" class="btn btn-primary fw-semibold px-3 py-2 rounded-3 shadow-sm">
+                    + Create
+                </a>
             </div>
 
             <!-- Card Body / Form Pencarian -->
@@ -41,7 +39,7 @@
                             <th scope="col" class="py-3">User</th>
                             <th scope="col" class="py-3">Foto</th>
                             <th scope="col" class="py-3">Nama</th>
-                            <th scope="col" class="py-3">Jenis</th> <!-- Header Kolom Jenis -->
+                            <th scope="col" class="py-3">Jenis</th>
                             <th scope="col" class="py-3">Harga Beli</th>
                             <th scope="col" class="py-3">Harga Jual</th>
                             <th scope="col" class="py-3 text-center">Stok</th>
@@ -68,7 +66,6 @@
 
                                 <td><span class="fw-bold text-dark text-capitalize">{{ $product->nama }}</span></td>
                                 
-                                <!-- Baris Data Jenis -->
                                 <td>
                                     <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 fw-semibold rounded-pill">
                                         {{ $product->jenis->nama_jenis ?? $product->jenis->nama ?? '-' }}
@@ -85,19 +82,16 @@
                                 
                                 <td class="pe-4 text-center">
                                     <div class="d-inline-flex gap-1">
-                                        @can('update', $product)
-                                            <a href="{{ route('produk.edit', $product) }}" class="btn btn-sm btn-warning fw-semibold px-2 py-1 shadow-sm">Edit</a>
-                                        @endcan
-                                        @can('delete', $product)
-                                            <form action="{{ route('produk.destroy', $product) }}" method="POST" class="d-inline mb-0">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-sm btn-danger fw-semibold px-2 py-1 shadow-sm"
-                                                    onclick="return confirm('Apakah anda yakin akan menghapus produk ini?')">
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        @endcan
+                                        <a href="{{ route('produk.edit', $product) }}" class="btn btn-sm btn-warning fw-semibold px-2 py-1 shadow-sm">Edit</a>
+                                        
+                                        <form action="{{ route('produk.destroy', $product) }}" method="POST" class="d-inline mb-0">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-sm btn-danger fw-semibold px-2 py-1 shadow-sm"
+                                                onclick="return confirm('Apakah anda yakin akan menghapus produk ini?')">
+                                                Hapus
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

@@ -12,12 +12,13 @@ class penjualan extends Model
     protected $table = 'penjualan';
     
     protected $fillable = [
-        'user_id',
-        'total_pembayaran',
-        'metode_pembayaran',
-        'status'
-    ];
-
+    'user_id',
+    'total_pembayaran',
+    'bayar',
+    'kembalian',
+    'metode_pembayaran',
+    'status',
+];
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
