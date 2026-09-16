@@ -34,9 +34,9 @@
 
 <div class="mb-3">
     <label class="form-label">Nama Produk</label>
-    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-        value="{{ old('name', $produk->nama ?? '') }}">
-    @error('name')
+    <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror"
+        value="{{ old('nama', $produk->nama ?? '') }}">
+    @error('nama')
         <div class="invalid-feedback">
             {{ $message }}
         </div>
@@ -45,9 +45,9 @@
 
 <div class="mb-3">
     <label class="form-label">Harga Beli</label>
-    <input type="number" name="purchase_price" class="form-control @error('purchase_price') is-invalid @enderror"
-        value="{{ old('purchase_price', $produk->harga_beli ?? '') }}">
-    @error('purchase_price')
+    <input type="number" name="harga_beli" class="form-control @error('harga_beli') is-invalid @enderror"
+        value="{{ old('harga_beli', $produk->harga_beli ?? '') }}">
+    @error('harga_beli')
         <div class="invalid-feedback">
             {{ $message }}
         </div>
@@ -56,9 +56,9 @@
 
 <div class="mb-3">
     <label class="form-label">Harga Jual</label>
-    <input type="number" name="selling_price" class="form-control @error('selling_price') is-invalid @enderror"
-        value="{{ old('selling_price', $produk->harga_jual ?? '') }}">
-    @error('selling_price')
+    <input type="number" name="harga_jual" class="form-control @error('harga_jual') is-invalid @enderror"
+        value="{{ old('harga_jual', $produk->harga_jual ?? '') }}">
+    @error('harga_jual')
         <div class="invalid-feedback">
             {{ $message }}
         </div>
@@ -67,9 +67,9 @@
 
 <div class="mb-3">
     <label class="form-label">Stok</label>
-    <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror"
-        value="{{ old('stock', $produk->stok ?? '') }}">
-    @error('stock')
+    <input type="number" name="stok" class="form-control @error('stok') is-invalid @enderror"
+        value="{{ old('stok', $produk->stok ?? '') }}">
+    @error('stok')
         <div class="invalid-feedback">
             {{ $message }}
         </div>
@@ -78,7 +78,6 @@
 
 <button class="btn btn-success mt-2" type="submit">Simpan</button>
 <a href="{{ route('produk.index') }}" class="btn btn-secondary mt-3">Kembali</a>
-
 
 <script>
     function previewImage(input) {
