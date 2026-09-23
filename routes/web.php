@@ -48,6 +48,12 @@ Route::middleware('auth')->group(function () {
         // --- ROUTE TAMBAHAN UNTUK PENJUALAN ---
         Route::get('/penjualan/{id}/cetak', [PenjualanController::class, 'cetakStruk'])->name('penjualan.cetak');
         Route::post('/penjualan/{penjualan}/checkout', [PenjualanController::class, 'checkout'])->name('penjualan.checkout');
+        Route::get('/laporan-penjualan', [PenjualanController::class, 'laporan'])->name('laporan.penjualan');
+
+        // --- ROUTE LAPORAN PENJUALAN ---
+        Route::get('/laporan-penjualan', [PenjualanController::class, 'laporan'])->name('laporan.penjualan');
+        Route::get('/laporan-penjualan/export', [PenjualanController::class, 'exportLaporan'])->name('laporan.penjualan.export');
+        Route::get('/laporan-penjualan/cetak', [PenjualanController::class, 'cetakLaporan'])->name('laporan.penjualan.cetak');
         
         Route::resource('/penjualan', PenjualanController::class);
         Route::resource('/item-penjualan', ItemPenjualanController::class);

@@ -23,6 +23,9 @@
           <a class="nav-link text-white {{ Request::is('penjualan*') ? 'fw-bold border-bottom border-2 border-white' : 'opacity-75' }}" href="{{ route('penjualan.index') }}">Penjualan</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link text-white {{ Request::is('laporan-penjualan*') ? 'fw-bold border-bottom border-2 border-white' : 'opacity-75' }}" href="{{ route('laporan.penjualan') }}">Laporan</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link text-white {{ Request::is('tentang*') ? 'fw-bold border-bottom border-2 border-white' : 'opacity-75' }}" href="{{ route('tentang') }}">Tentang</a>
         </li>
       </ul>

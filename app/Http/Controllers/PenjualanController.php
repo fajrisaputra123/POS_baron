@@ -149,6 +149,45 @@ class PenjualanController extends Controller
     }
 
     /**
+     * Menampilkan laporan penjualan berdasarkan periode tanggal
+     */
+    public function laporan(Request $request)
+    {
+        $user = Auth::user();
+
+        $tanggalMulai = $request->tanggal_mulai ?? now()->startOfMonth()->format('Y-m-d');
+        $tanggalSelesai = $request->tanggal_selesai ?? now()->format('Y-m-d');
+
+        $penjualans = Penjualan::with(['user', 'itemPenjualan.produk'])
+            ->where('status', 'CLOSED')
+            ->whereDate('created_at', '>=', $tanggalMulai)
+            ->whereDate('created_at', '<=', $tanggalSelesai)
+            // 🔒 Kasir hanya bisa melihat transaksinya sendiri
+            ->when($user->role && $user->role->name === 'kasir', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->latest()
+            ->get();
+
+        $totalPendapatan = $penjualans->sum('total_pembayaran');
+        $totalTransaksi  = $penjualans->count();
+        $totalCash       = $penjualans->where('metode_pembayaran', 'CASH')->sum('total_pembayaran');
+        $totalQris       = $penjualans->where('metode_pembayaran', 'QRIS')->sum('total_pembayaran');
+        $totalTransfer   = $penjualans->where('metode_pembayaran', 'TRANSFER')->sum('total_pembayaran');
+
+        return view('penjualan.laporan', compact(
+            'penjualans',
+            'totalPendapatan',
+            'totalTransaksi',
+            'totalCash',
+            'totalQris',
+            'totalTransfer',
+            'tanggalMulai',
+            'tanggalSelesai'
+        ));
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Penjualan $penjualan)

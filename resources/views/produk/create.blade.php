@@ -38,6 +38,24 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                            <label for="satuan" class="form-label fw-semibold">Satuan</label>
+                            <select name="satuan" id="satuan" class="form-select @error('satuan') is-invalid @enderror" required>
+                                <option value="">-- Pilih Satuan --</option>
+                                <option value="Pcs" {{ old('satuan') == 'Pcs' ? 'selected' : '' }}>Pcs</option>
+                                <option value="Kg" {{ old('satuan') == 'Kg' ? 'selected' : '' }}>Kg</option>
+                                <option value="Gram" {{ old('satuan') == 'Gram' ? 'selected' : '' }}>Gram</option>
+                                <option value="Liter" {{ old('satuan') == 'Liter' ? 'selected' : '' }}>Liter</option>
+                                <option value="Ml" {{ old('satuan') == 'Ml' ? 'selected' : '' }}>Mililiter (Ml)</option>
+                                <option value="Box" {{ old('satuan') == 'Box' ? 'selected' : '' }}>Box</option>
+                                <option value="Pack" {{ old('satuan') == 'Pack' ? 'selected' : '' }}>Pack</option>
+                                <option value="Lusin" {{ old('satuan') == 'Lusin' ? 'selected' : '' }}>Lusin</option>
+                            </select>
+                            @error('satuan')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="harga_beli" class="form-label fw-semibold">Harga Beli</label>
