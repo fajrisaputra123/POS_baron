@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <h3 class="fw-bold text-white mb-1 tracking-tight">POS System</h3>
+            <h3 class="fw-bold text-white mb-1 tracking-tight">POS DeFaz</h3>
             <p class="text-white-50 small mb-4">Masuk ke sistem kasir untuk memulai transaksi</p>
 
             {{-- Alert Error --}}
