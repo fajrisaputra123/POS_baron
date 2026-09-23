@@ -4,6 +4,9 @@
 
 @section('content')
 
+@include('layouts.navbar')
+
+
     {{-- Alert Error dari Validasi Form --}}
     @if ($errors->any())
         <div class="alert alert-danger mb-3">

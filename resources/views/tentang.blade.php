@@ -2,6 +2,8 @@
 
 @section('content')
 
+@include('layouts.navbar')
+
 <style>
     .tentang-hero {
         background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);

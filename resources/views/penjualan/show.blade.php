@@ -42,10 +42,11 @@
             Daftar Item
         </div>
         <div class="card-body p-0">
-            <table class="table table-striped mb-0">
+            <table class="table table-striped align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th style="width: 50px;">#</th>
+                        <th style="width: 80px;">Foto</th>
                         <th>Produk</th>
                         <th class="text-end">Harga</th>
                         <th class="text-center">Qty</th>
@@ -53,25 +54,38 @@
                     </tr>
                 </thead>
                 <tbody>
-                   @forelse ($penjualan->itemPenjualan as $index => $item)
-    <tr>
-        <td>{{ $index + 1 }}</td>
-        <td>{{ $item->produk->nama ?? '-' }}</td>
-        <td class="text-end">Rp{{ number_format($item->harga_satuan ?? 0, 0, ',', '.') }}</td>
-        <td class="text-center">{{ $item->kuantitas ?? 0 }}</td>
-        <td class="text-end">
-            Rp{{ number_format($item->subtotal ?? 0, 0, ',', '.') }}
-        </td>
-    </tr>
-@empty
-    <tr>
-        <td colspan="5" class="text-center text-muted py-3">Tidak ada item.</td>
-    </tr>
-@endforelse
+                    @forelse ($penjualan->itemPenjualan as $index => $item)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>
+                                @if(!empty($item->produk->foto))
+                                    <img src="{{ asset('storage/' . $item->produk->foto) }}" 
+                                         alt="{{ $item->produk->nama ?? 'Produk' }}" 
+                                         class="rounded img-thumbnail" 
+                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                @else
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted border" 
+                                         style="width: 50px; height: 50px; font-size: 10px;">
+                                        No Image
+                                    </div>
+                                @endif
+                            </td>
+                            <td>{{ $item->produk->nama ?? '-' }}</td>
+                            <td class="text-end">Rp{{ number_format($item->harga_satuan ?? 0, 0, ',', '.') }}</td>
+                            <td class="text-center">{{ $item->kuantitas ?? $item->jumlah ?? 0 }}</td>
+                            <td class="text-end">
+                                Rp{{ number_format($item->subtotal ?? 0, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-3">Tidak ada item.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="4" class="text-end">Total</th>
+                        <th colspan="5" class="text-end">Total</th>
                         <th class="text-end">Rp{{ number_format($penjualan->total_pembayaran, 0, ',', '.') }}</th>
                     </tr>
                 </tfoot>
