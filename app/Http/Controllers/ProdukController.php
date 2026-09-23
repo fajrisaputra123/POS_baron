@@ -86,6 +86,16 @@ class ProdukController extends Controller
 
     public function destroy(Produk $produk)
     {
+        // Cek apakah produk ini sudah pernah dipakai dalam transaksi penjualan.
+        // Kalau masih ada relasinya di item_penjualan, jangan hapus (akan gagal
+        // karena foreign key), tampilkan pesan error yang jelas ke user.
+        $sudahTerjual = \App\Models\ItemPenjualan::where('produk_id', $produk->id)->exists();
+
+        if ($sudahTerjual) {
+            return redirect()->route('produk.index')
+                ->with('error', 'Produk "' . $produk->nama . '" tidak bisa dihapus karena sudah memiliki riwayat transaksi penjualan.');
+        }
+
         if ($produk->foto) {
             Storage::disk('public')->delete($produk->foto);
         }

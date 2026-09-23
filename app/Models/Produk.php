@@ -11,16 +11,16 @@ class Produk extends Model
 
     protected $table = 'Produk';
 
-    protected $fillable = [
-        'user_id',
-        'foto',
-        'jenis_id',
-        'nama',
-        'harga_beli',
-        'harga_jual',
-        'stok'
-    ];
-
+   protected $fillable = [
+    'jenis_id',
+    'user_id',
+    'nama',
+    'satuan',
+    'harga_beli',
+    'harga_jual',
+    'stok',
+    'foto',
+];
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

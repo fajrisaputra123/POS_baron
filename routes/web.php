@@ -8,6 +8,8 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\JenisController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LaporanController;
+
 
 // Route Halaman Utama (Redirect ke Login / Dashboard)
 Route::get('/', function () {
@@ -28,6 +30,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/tentang', function () {
         return view('tentang');
     })->name('tentang');
+
+    Route::get('/laporan/data', [LaporanController::class, 'data'])
+    ->name('laporan.data')
+    ->middleware('auth');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

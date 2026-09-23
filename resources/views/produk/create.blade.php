@@ -57,7 +57,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="harga_beli" class="form-label fw-semibold">Harga Beli</label>
                                 <input type="number" name="harga_beli" id="harga_beli" class="form-control @error('harga_beli') is-invalid @enderror" value="{{ old('harga_beli') }}" required placeholder="0">
                                 @error('harga_beli')
@@ -65,7 +65,24 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
+                                <label for="satuan_beli" class="form-label fw-semibold">Satuan Beli</label>
+                                <select name="satuan_beli" id="satuan_beli" class="form-select @error('satuan_beli') is-invalid @enderror" required>
+                                    <option value="">-- Pilih Satuan --</option>
+                                    <option value="pcs" {{ old('satuan_beli') == 'pcs' ? 'selected' : '' }}>Pcs</option>
+                                    <option value="kg" {{ old('satuan_beli') == 'kg' ? 'selected' : '' }}>Kg</option>
+                                    <option value="gram" {{ old('satuan_beli') == 'gram' ? 'selected' : '' }}>Gram</option>
+                                    <option value="liter" {{ old('satuan_beli') == 'liter' ? 'selected' : '' }}>Liter</option>
+                                    <option value="box" {{ old('satuan_beli') == 'box' ? 'selected' : '' }}>Box</option>
+                                    <option value="lusin" {{ old('satuan_beli') == 'lusin' ? 'selected' : '' }}>Lusin</option>
+                                    <option value="karung" {{ old('satuan_beli') == 'karung' ? 'selected' : '' }}>Karung</option>
+                                </select>
+                                @error('satuan_beli')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4 mb-3">
                                 <label for="harga_jual" class="form-label fw-semibold">Harga Jual</label>
                                 <input type="number" name="harga_jual" id="harga_jual" class="form-control @error('harga_jual') is-invalid @enderror" value="{{ old('harga_jual') }}" required placeholder="0">
                                 @error('harga_jual')

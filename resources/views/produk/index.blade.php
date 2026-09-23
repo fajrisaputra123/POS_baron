@@ -41,6 +41,7 @@
                             <th scope="col" class="py-3">Nama</th>
                             <th scope="col" class="py-3">Jenis</th>
                             <th scope="col" class="py-3">Harga Beli</th>
+                            <th scope="col" class="py-3">Satuan</th>
                             <th scope="col" class="py-3">Harga Jual</th>
                             <th scope="col" class="py-3 text-center">Stok</th>
                             <th scope="col" class="pe-4 py-3 text-center" style="width: 160px;">Aksi</th>
@@ -73,6 +74,13 @@
                                 </td>
 
                                 <td class="text-secondary">Rp {{ number_format($product->harga_beli, 0, ',', '.') }}</td>
+                                
+                                <td>
+                                    <span class="badge bg-light text-dark border px-3 py-2 fw-semibold rounded-pill text-capitalize">
+                                        {{ $product->satuan->nama_satuan ?? $product->satuan->nama ?? $product->satuan ?? '-' }}
+                                    </span>
+                                </td>
+                                
                                 <td class="fw-semibold text-success">Rp {{ number_format($product->harga_jual, 0, ',', '.') }}</td>
                                 <td class="text-center">
                                     <span class="badge rounded-pill {{ $product->stok > 10 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle' }} px-3 py-2 fw-bold">
@@ -97,7 +105,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-5 text-muted">
+                                <td colspan="10" class="text-center py-5 text-muted">
                                     <p class="mb-0 fs-5 fw-semibold">Data tidak tersedia.</p>
                                 </td>
                             </tr>

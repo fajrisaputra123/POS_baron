@@ -62,8 +62,12 @@
 
                                         <div>
                                             <div class="fw-semibold">{{ $product->nama }}</div>
-                                            <small class="text-muted">Rp
-                                                {{ number_format($product->harga_jual, 0, ',', '.') }}</small>
+                                            <small class="text-muted">
+                                                Rp {{ number_format($product->harga_jual, 0, ',', '.') }}
+                                                @if(!empty($product->satuan))
+                                                    / {{ $product->satuan }}
+                                                @endif
+                                            </small>
                                         </div>
                                     </div>
                                 </button>
@@ -93,6 +97,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>Produk</th>
+                            <th>Satuan</th>
                             <th>Harga</th>
                             <th style="width: 80px;">Qty</th>
                             <th>Subtotal</th>
@@ -103,6 +108,7 @@
                         @forelse ($sale->itemPenjualan ?? [] as $item)
                             <tr>
                                 <td>{{ $item->produk->nama ?? 'Produk Dihapus' }}</td>
+                                <td>{{ $item->produk->satuan ?? '-' }}</td>
                                 <td>Rp {{ number_format($item->produk->harga_jual ?? 0, 0, ',', '.') }}</td>
                                 <td>
                                     <form method="POST" action="{{ route('item-penjualan.update', $item->id) }}">
@@ -128,7 +134,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-3">Belum ada item di keranjang</td>
+                                <td colspan="6" class="text-center text-muted py-3">Belum ada item di keranjang</td>
                             </tr>
                         @endforelse
                     </tbody>
